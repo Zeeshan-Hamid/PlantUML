@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantUML Diagram Generator</title>
+</head>
+<body>
+    <h1>PlantUML Diagram Generator</h1>
+    <form id="umlForm">
+        <textarea id="umlCode" rows="10" cols="50" placeholder="Enter PlantUML code here">@startuml
+Alice -> Bob: Hello
+@enduml</textarea>
+        <br>
+        <button type="submit">Generate Diagram</button>
+    </form>
+    <h2>Generated Diagram</h2>
+    <div id="diagramContainer">
+        <!-- The diagram will appear here -->
+    </div>
+
+    <script>
+        const form = document.getElementById('umlForm');
+        const diagramContainer = document.getElementById('diagramContainer');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const umlCode = document.getElementById('umlCode').value;
+
+            try {
+                const response = await fetch('/generate-diagram', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ umlCode }),
+                });
+
+                if (response.ok) {
+                    const svg = await response.text();
+                    diagramContainer.innerHTML = svg; // Display the SVG
+                } else {
+                    diagramContainer.innerHTML = `<p style="color: red;">Error generating diagram</p>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                diagramContainer.innerHTML = `<p style="color: red;">Error generating diagram</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
